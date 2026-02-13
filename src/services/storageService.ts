@@ -1,8 +1,11 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { ProgressData, DateInterval } from '@/types/progress';
+import { DiaryData } from '@/types/diary'; 
 import { dateUtils } from '@/utils/dateUtils';
 
+
 const STORAGE_KEY = 'quit_smoking_progress';
+const DIARY_STORAGE_KEY = 'quit_smoking_diary';
 
 export const storageService = {
   // Сохранить прогресс
@@ -41,6 +44,37 @@ export const storageService = {
       await AsyncStorage.removeItem(STORAGE_KEY);
     } catch (error) {
       console.error('Failed to clear progress:', error);
+      throw error;
+    }
+  },
+
+  // Сохранить дневник
+  saveDiary: async (diary: DiaryData): Promise<void> => {
+    try {
+      await AsyncStorage.setItem(DIARY_STORAGE_KEY, JSON.stringify(diary));
+    } catch (error) {
+      console.error('Failed to save diary:', error);
+      throw error;
+    }
+  },
+
+  // Загрузить дневник
+  loadDiary: async (): Promise<DiaryData | null> => {
+    try {
+      const data = await AsyncStorage.getItem(DIARY_STORAGE_KEY);
+      return data ? JSON.parse(data) : null;
+    } catch (error) {
+      console.error('Failed to load diary:', error);
+      return null;
+    }
+  },
+
+  // Очистить дневник
+  clearDiary: async (): Promise<void> => {
+    try {
+      await AsyncStorage.removeItem(DIARY_STORAGE_KEY);
+    } catch (error) {
+      console.error('Failed to clear diary:', error);
       throw error;
     }
   }
