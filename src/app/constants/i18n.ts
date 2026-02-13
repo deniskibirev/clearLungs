@@ -77,6 +77,26 @@ export const translations = {
     currentStreakDay: 'Current streak',
     pastStreakDay: 'Past streak',
 
+    diaryTitle: 'Diary',
+    diaryPlaceholder: 'How are you feeling today?',
+    addEntry: 'Add Entry',
+    entries: 'entries',
+    edit: 'Edit',
+    delete: 'Delete',
+    save: 'Save',
+    deleteConfirm: 'Delete entry',
+    deleteConfirmMessage: 'Are you sure?',
+    noEntries: 'No entries yet',
+    noEntriesSubtitle: 'Write down your thoughts and feelings about your smoke-free journey',
+    mood: 'Mood',
+    cravings: 'Cravings',
+    great: 'Great',
+    good: 'Good',
+    okay: 'Okay',
+    bad: 'Bad',
+    awful: 'Awful',
+    yesterday: 'Yesterday',
+
   },
   ru: {
     progress: 'Прогресс',
@@ -138,6 +158,27 @@ export const translations = {
 
     currentStreakDay: 'Текущая серия',
     pastStreakDay: 'Прошлые серии',
+
+     diaryTitle: 'Дневник',
+    diaryPlaceholder: 'Что вы чувствуете сегодня?',
+    addEntry: 'Добавить запись',
+    entries: 'записей', 
+    edit: 'Редактировать',
+    delete: 'Удалить',
+    save: 'Сохранить',
+   
+    deleteConfirm: 'Удалить запись',
+    deleteConfirmMessage: 'Вы уверены?',
+    noEntries: 'Здесь пока пусто',
+    noEntriesSubtitle: 'Запишите свои мысли и чувства о пути без курения',
+    mood: 'Настроение',
+    cravings: 'Тяга',
+    great: 'Отлично',
+    good: 'Хорошо',
+    okay: 'Нормально',
+    bad: 'Плохо',
+    awful: 'Ужасно',
+    yesterday: 'Вчера',
   }
 };
 

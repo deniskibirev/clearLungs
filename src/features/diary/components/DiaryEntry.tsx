@@ -11,7 +11,7 @@ interface DiaryEntryProps {
 
 export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
   const { themeColors } = useTheme();
-  const { t } = useLanguage();
+  const { t, language } = useLanguage();
   const { deleteEntry, editEntry } = useDiaryStore();
   const [isEditing, setIsEditing] = useState(false);
   const [editText, setEditText] = useState(entry.content);
@@ -28,24 +28,49 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
     }
   };
 
+  const getMoodText = (mood?: string) => {
+    switch (mood) {
+      case 'great': return t('great');
+      case 'good': return t('good');
+      case 'okay': return t('okay');
+      case 'bad': return t('bad');
+      case 'awful': return t('awful');
+      default: return '';
+    }
+  };
+
   const formatDate = (dateString: string) => {
     const date = new Date(dateString + 'T00:00:00');
-    return date.toLocaleDateString(undefined, {
-      weekday: 'long',
-      year: 'numeric',
-      month: 'long',
-      day: 'numeric'
-    });
+    const today = new Date();
+    const yesterday = new Date(today);
+    yesterday.setDate(yesterday.getDate() - 1);
+    
+    // Сравниваем даты без времени
+    const dateStr = date.toDateString();
+    const todayStr = today.toDateString();
+    const yesterdayStr = yesterday.toDateString();
+    
+    if (dateStr === todayStr) {
+      return t('today');
+    } else if (dateStr === yesterdayStr) {
+      return t('yesterday');
+    } else {
+      return date.toLocaleDateString(language === 'ru' ? 'ru-RU' : 'en-US', {
+        year: 'numeric',
+        month: 'long',
+        day: 'numeric'
+      });
+    }
   };
 
   const handleDelete = () => {
     Alert.alert(
-      'Удалить запись',
-      'Вы уверены?',
+      t('deleteConfirm'),
+      t('deleteConfirmMessage'),
       [
-        { text: 'Отмена', style: 'cancel' },
+        { text: t('cancel'), style: 'cancel' },
         { 
-          text: 'Удалить', 
+          text: t('delete'), 
           style: 'destructive',
           onPress: () => deleteEntry(entry.id)
         }
@@ -71,17 +96,22 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
           autoFocus
         />
         
+        <Text style={[styles.moodLabel, { color: themeColors.text }]}>{t('mood')}:</Text>
         <View style={styles.moodSelector}>
           {['great', 'good', 'okay', 'bad', 'awful'].map((mood) => (
             <TouchableOpacity
               key={mood}
               style={[
                 styles.moodButton,
+                { backgroundColor: '#333' },
                 selectedMood === mood && { backgroundColor: themeColors.primary }
               ]}
               onPress={() => setSelectedMood(mood as any)}
             >
               <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
+              <Text style={[styles.moodText, { color: '#FFF' }]}>
+                {t(mood as any)}
+              </Text>
             </TouchableOpacity>
           ))}
         </View>
@@ -91,13 +121,13 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
             style={[styles.saveButton, { backgroundColor: themeColors.primary }]}
             onPress={handleSave}
           >
-            <Text style={styles.saveButtonText}>Сохранить</Text>
+            <Text style={styles.saveButtonText}>{t('save')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
             style={[styles.cancelButton, { borderColor: '#666' }]}
             onPress={() => setIsEditing(false)}
           >
-            <Text style={[styles.cancelButtonText, { color: '#666' }]}>Отмена</Text>
+            <Text style={[styles.cancelButtonText, { color: '#666' }]}>{t('cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -109,9 +139,16 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
-          <Text style={[styles.date, { color: themeColors.text }]}>
-            {formatDate(entry.date)}
-          </Text>
+          <View>
+            <Text style={[styles.date, { color: themeColors.text }]}>
+              {formatDate(entry.date)}
+            </Text>
+            {entry.mood && (
+              <Text style={[styles.moodText, { color: '#888' }]}>
+                {getMoodText(entry.mood)}
+              </Text>
+            )}
+          </View>
         </View>
         <View style={styles.actions}>
           <TouchableOpacity onPress={() => setIsEditing(true)} style={styles.actionButton}>
@@ -130,7 +167,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
       {entry.cravings !== undefined && (
         <View style={styles.cravings}>
           <Text style={[styles.cravingsText, { color: '#888' }]}>
-            Тяга: {'🔥'.repeat(entry.cravings)}{'💨'.repeat(10 - entry.cravings)}
+            {t('cravings')}: {'🔥'.repeat(entry.cravings)}{'💨'.repeat(10 - entry.cravings)}
           </Text>
         </View>
       )}
@@ -154,15 +191,18 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     alignItems: 'center',
     flex: 1,
+    gap: 12,
   },
   moodEmoji: {
-    fontSize: 20,
-    marginRight: 8,
+    fontSize: 24,
   },
   date: {
     fontSize: 14,
     fontWeight: '500',
-    flex: 1,
+  },
+  moodText: {
+    fontSize: 12,
+    marginTop: 2,
   },
   actions: {
     flexDirection: 'row',
@@ -193,15 +233,23 @@ const styles = StyleSheet.create({
     textAlignVertical: 'top',
     marginBottom: 12,
   },
+  moodLabel: {
+    fontSize: 14,
+    fontWeight: '500',
+    marginBottom: 8,
+  },
   moodSelector: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    flexWrap: 'wrap',
+    gap: 8,
     marginBottom: 16,
   },
   moodButton: {
-    padding: 10,
+    padding: 8,
     borderRadius: 20,
-    backgroundColor: '#333',
+    flexDirection: 'row',
+    alignItems: 'center',
+    gap: 4,
   },
   editButtons: {
     flexDirection: 'row',

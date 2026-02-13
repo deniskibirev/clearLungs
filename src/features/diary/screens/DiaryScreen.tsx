@@ -6,7 +6,6 @@ import {
   ScrollView,
   TouchableOpacity,
   TextInput,
-  Alert,
 } from 'react-native';
 import { useTheme } from '@/app/context/ThemeContext';
 import { useLanguage } from '@/app/context/LanguageContext';
@@ -20,14 +19,12 @@ export const DiaryScreen = () => {
   
   const [newEntryText, setNewEntryText] = useState('');
   const [selectedMood, setSelectedMood] = useState<'great' | 'good' | 'okay' | 'bad' | 'awful' | undefined>();
-  const [cravings, setCravings] = useState<number | undefined>();
 
   const handleAddEntry = () => {
     if (newEntryText.trim()) {
-      addEntry(newEntryText, selectedMood, cravings);
+      addEntry(newEntryText, selectedMood);
       setNewEntryText('');
       setSelectedMood(undefined);
-      setCravings(undefined);
     }
   };
 
@@ -44,11 +41,21 @@ export const DiaryScreen = () => {
 
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
+      {/* Header */}
+      <View style={[styles.header, { borderBottomColor: '#333' }]}>
+        <Text style={[styles.headerTitle, { color: themeColors.text }]}>
+          {t('diaryTitle')}
+        </Text>
+        <Text style={[styles.entryCount, { color: '#888' }]}>
+          {diary.entries.length} {t('entries')}
+        </Text>
+      </View>
+
       {/* Форма добавления записи */}
       <View style={[styles.inputContainer, { backgroundColor: themeColors.calendar?.background || '#1E1E1E' }]}>
         <TextInput
           style={[styles.input, { color: themeColors.text }]}
-          placeholder="Что вы чувствуете сегодня?"
+          placeholder={t('diaryPlaceholder')}
           placeholderTextColor="#666"
           value={newEntryText}
           onChangeText={setNewEntryText}
@@ -68,6 +75,9 @@ export const DiaryScreen = () => {
               onPress={() => setSelectedMood(mood as any)}
             >
               <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
+              <Text style={[styles.moodText, { color: '#FFF' }]}>
+                {t(mood as any)}
+              </Text>
             </TouchableOpacity>
           ))}
         </ScrollView>
@@ -77,20 +87,20 @@ export const DiaryScreen = () => {
           style={[styles.addButton, { backgroundColor: themeColors.primary }]}
           onPress={handleAddEntry}
         >
-          <Text style={styles.addButtonText}>➕ Записать</Text>
+          <Text style={styles.addButtonText}>{t('addEntry')}</Text>
         </TouchableOpacity>
       </View>
 
-      {/* Список записей - ОТ НОВЫХ К СТАРЫМ */}
+      {/* Список записей */}
       <ScrollView style={styles.entriesList}>
         {diary.entries.length === 0 ? (
           <View style={styles.emptyState}>
             <Text style={[styles.emptyEmoji, { color: themeColors.text }]}>📔</Text>
             <Text style={[styles.emptyTitle, { color: themeColors.text }]}>
-              Здесь пока пусто
+              {t('noEntries')}
             </Text>
             <Text style={[styles.emptySubtitle, { color: '#888' }]}>
-              Запишите свои мысли и чувства о пути без курения
+              {t('noEntriesSubtitle')}
             </Text>
           </View>
         ) : (
@@ -106,6 +116,21 @@ export const DiaryScreen = () => {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
+  },
+  header: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    paddingHorizontal: 20,
+    paddingVertical: 16,
+    borderBottomWidth: 1,
+  },
+  headerTitle: {
+    fontSize: 24,
+    fontWeight: 'bold',
+  },
+  entryCount: {
+    fontSize: 14,
   },
   inputContainer: {
     padding: 16,
@@ -126,16 +151,18 @@ const styles = StyleSheet.create({
     marginBottom: 8,
   },
   moodButton: {
-    padding: 10,
+    padding: 8,
     borderRadius: 20,
     marginRight: 8,
-    width: 44,
-    height: 44,
+    flexDirection: 'row',
     alignItems: 'center',
-    justifyContent: 'center',
+    gap: 4,
   },
   moodEmoji: {
-    fontSize: 20,
+    fontSize: 16,
+  },
+  moodText: {
+    fontSize: 12,
   },
   addButton: {
     padding: 14,
