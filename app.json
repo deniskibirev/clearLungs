@@ -26,15 +26,6 @@
       },
       "package": "com.anonymous.quitsmokingapp"
     },
-    "plugins": [
-      [
-        "expo-notifications",
-        {
-          "icon": "./assets/icon.png",
-          "color": "#4CAF50"
-        }
-      ]
-    ],
     "extra": {
       "eas": {
         "projectId": "8a2cf292-062e-434b-8908-0c40d4798871"
