@@ -183,7 +183,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
             <Text style={[styles.actionText, { color: themeColors.primary }]}>✏️</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Text style={styles.actionText}>➖</Text> {/* ЗАМЕНИЛИ 🗑️ на ➖ */}
+            <Text style={styles.actionText}>➖</Text>
           </TouchableOpacity>
         </View>
       </View>
