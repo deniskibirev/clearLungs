@@ -39,24 +39,43 @@ export const DiaryScreen = () => {
     }
   };
 
+  const getEntryCountText = (count: number) => {
+    const { language } = useLanguage();
+    
+    if (language === 'ru') {
+      if (count % 10 === 1 && count % 100 !== 11) return `${count} запись`;
+      if ([2,3,4].includes(count % 10) && ![12,13,14].includes(count % 100)) return `${count} записи`;
+      return `${count} записей`;
+    } else {
+      return `${count} ${count === 1 ? 'entry' : 'entries'}`;
+    }
+  };
+
   return (
     <View style={[styles.container, { backgroundColor: themeColors.background }]}>
       {/* Header */}
-      <View style={[styles.header, { borderBottomColor: '#333' }]}>
+      <View style={[styles.header, { borderBottomColor: themeColors.border || '#888' }]}>
         <Text style={[styles.headerTitle, { color: themeColors.text }]}>
           {t('diaryTitle')}
         </Text>
-        <Text style={[styles.entryCount, { color: '#888' }]}>
-          {diary.entries.length} {t('entries')}
+        <Text style={[styles.entryCount, { color: themeColors.text === '#FFFFFF' ? '#888' : '#666' }]}>
+          {getEntryCountText(diary.entries.length)}
         </Text>
       </View>
 
       {/* Форма добавления записи */}
-      <View style={[styles.inputContainer, { backgroundColor: themeColors.calendar?.background || '#1E1E1E' }]}>
+      <View style={[styles.inputContainer, { backgroundColor: themeColors.cardBackground || '#1E1E1E' }]}>
         <TextInput
-          style={[styles.input, { color: themeColors.text }]}
+          style={[
+            styles.input, 
+            { 
+              color: themeColors.text,
+              backgroundColor: themeColors.inputBackground || '#333',
+              borderColor: themeColors.border || '#444',
+            }
+          ]}
           placeholder={t('diaryPlaceholder')}
-          placeholderTextColor="#666"
+          placeholderTextColor={themeColors.text === '#FFFFFF' ? '#888' : '#999'}
           value={newEntryText}
           onChangeText={setNewEntryText}
           multiline
@@ -69,13 +88,29 @@ export const DiaryScreen = () => {
               key={mood}
               style={[
                 styles.moodButton,
-                { backgroundColor: '#333' },
-                selectedMood === mood && { backgroundColor: themeColors.primary }
+                { 
+                  backgroundColor: themeColors.inputBackground || '#333',
+                  borderColor: themeColors.border || '#444',
+                  borderWidth: 1,
+                },
+                selectedMood === mood && { 
+                  backgroundColor: themeColors.primary,
+                  borderColor: themeColors.primary,
+                }
               ]}
               onPress={() => setSelectedMood(mood as any)}
             >
               <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
-              <Text style={[styles.moodText, { color: '#FFF' }]}>
+              <Text 
+                style={[
+                  styles.moodText, 
+                  { 
+                    color: selectedMood === mood 
+                      ? '#FFFFFF' 
+                      : themeColors.text 
+                  }
+                ]}
+              >
                 {t(mood as any)}
               </Text>
             </TouchableOpacity>
@@ -99,7 +134,7 @@ export const DiaryScreen = () => {
             <Text style={[styles.emptyTitle, { color: themeColors.text }]}>
               {t('noEntries')}
             </Text>
-            <Text style={[styles.emptySubtitle, { color: '#888' }]}>
+            <Text style={[styles.emptySubtitle, { color: themeColors.text === '#FFFFFF' ? '#888' : '#666' }]}>
               {t('noEntriesSubtitle')}
             </Text>
           </View>
@@ -143,7 +178,7 @@ const styles = StyleSheet.create({
     minHeight: 80,
     textAlignVertical: 'top',
     borderRadius: 8,
-    backgroundColor: '#333',
+    borderWidth: 1,
   },
   moodContainer: {
     flexDirection: 'row',
@@ -163,6 +198,7 @@ const styles = StyleSheet.create({
   },
   moodText: {
     fontSize: 12,
+    fontWeight: '500',
   },
   addButton: {
     padding: 14,

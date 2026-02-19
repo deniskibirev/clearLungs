@@ -45,7 +45,6 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
     const yesterday = new Date(today);
     yesterday.setDate(yesterday.getDate() - 1);
     
-    // Сравниваем даты без времени
     const dateStr = date.toDateString();
     const todayStr = today.toDateString();
     const yesterdayStr = yesterday.toDateString();
@@ -87,9 +86,16 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
 
   if (isEditing) {
     return (
-      <View style={[styles.container, { backgroundColor: themeColors.calendar?.background || '#1E1E1E' }]}>
+      <View style={[styles.container, { backgroundColor: themeColors.cardBackground || '#1E1E1E' }]}>
         <TextInput
-          style={[styles.editInput, { color: themeColors.text, borderColor: themeColors.primary }]}
+          style={[
+            styles.editInput, 
+            { 
+              color: themeColors.text,
+              backgroundColor: themeColors.inputBackground || '#333',
+              borderColor: themeColors.primary,
+            }
+          ]}
           value={editText}
           onChangeText={setEditText}
           multiline
@@ -103,13 +109,29 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
               key={mood}
               style={[
                 styles.moodButton,
-                { backgroundColor: '#333' },
-                selectedMood === mood && { backgroundColor: themeColors.primary }
+                { 
+                  backgroundColor: themeColors.inputBackground || '#333',
+                  borderColor: themeColors.border || '#444',
+                  borderWidth: 1,
+                },
+                selectedMood === mood && { 
+                  backgroundColor: themeColors.primary,
+                  borderColor: themeColors.primary,
+                }
               ]}
               onPress={() => setSelectedMood(mood as any)}
             >
               <Text style={styles.moodEmoji}>{getMoodEmoji(mood)}</Text>
-              <Text style={[styles.moodText, { color: '#FFF' }]}>
+              <Text 
+                style={[
+                  styles.moodText, 
+                  { 
+                    color: selectedMood === mood 
+                      ? '#FFFFFF' 
+                      : themeColors.text 
+                  }
+                ]}
+              >
                 {t(mood as any)}
               </Text>
             </TouchableOpacity>
@@ -124,10 +146,16 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
             <Text style={styles.saveButtonText}>{t('save')}</Text>
           </TouchableOpacity>
           <TouchableOpacity 
-            style={[styles.cancelButton, { borderColor: '#666' }]}
+            style={[
+              styles.cancelButton, 
+              { 
+                borderColor: themeColors.border || '#666',
+                backgroundColor: themeColors.inputBackground || '#333',
+              }
+            ]}
             onPress={() => setIsEditing(false)}
           >
-            <Text style={[styles.cancelButtonText, { color: '#666' }]}>{t('cancel')}</Text>
+            <Text style={[styles.cancelButtonText, { color: themeColors.text }]}>{t('cancel')}</Text>
           </TouchableOpacity>
         </View>
       </View>
@@ -135,7 +163,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
   }
 
   return (
-    <View style={[styles.container, { backgroundColor: themeColors.calendar?.background || '#1E1E1E' }]}>
+    <View style={[styles.container, { backgroundColor: themeColors.cardBackground || '#1E1E1E' }]}>
       <View style={styles.header}>
         <View style={styles.headerLeft}>
           <Text style={styles.moodEmoji}>{getMoodEmoji(entry.mood)}</Text>
@@ -144,7 +172,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
               {formatDate(entry.date)}
             </Text>
             {entry.mood && (
-              <Text style={[styles.moodText, { color: '#888' }]}>
+              <Text style={[styles.moodText, { color: themeColors.text === '#FFFFFF' ? '#888' : '#666' }]}>
                 {getMoodText(entry.mood)}
               </Text>
             )}
@@ -155,7 +183,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
             <Text style={[styles.actionText, { color: themeColors.primary }]}>✏️</Text>
           </TouchableOpacity>
           <TouchableOpacity onPress={handleDelete} style={styles.actionButton}>
-            <Text style={styles.actionText}>🗑️</Text>
+            <Text style={styles.actionText}>➖</Text> {/* ЗАМЕНИЛИ 🗑️ на ➖ */}
           </TouchableOpacity>
         </View>
       </View>
@@ -166,7 +194,7 @@ export const DiaryEntry: React.FC<DiaryEntryProps> = ({ entry }) => {
       
       {entry.cravings !== undefined && (
         <View style={styles.cravings}>
-          <Text style={[styles.cravingsText, { color: '#888' }]}>
+          <Text style={[styles.cravingsText, { color: themeColors.text === '#FFFFFF' ? '#666' : '#888' }]}>
             {t('cravings')}: {'🔥'.repeat(entry.cravings)}{'💨'.repeat(10 - entry.cravings)}
           </Text>
         </View>
