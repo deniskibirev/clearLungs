@@ -22,6 +22,9 @@
       "@/navigation/*": [
         "./src/navigation/*"
       ],
+      "@/assets/*": [
+        "assets/*"
+      ],
       "@/app/*": [
         "./src/app/*"
       ]
